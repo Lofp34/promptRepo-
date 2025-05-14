@@ -81,6 +81,12 @@ h1{margin:0 0 14px;font-size:1.6rem}
    <button id="apiKeyBtn" class="icon-btn" style="background:#2d3843;font-size:18px;margin-left:7px" title="Configurer la clé OpenAI" aria-label="Configurer la clé API OpenAI">🔑</button>
  </div>
  <ul id="promptList"></ul>
+  <!-- Export / Import JSON -->
+  <button id="exportBtn" class="btn btn-secondary"
+          style="position:fixed;bottom:100px;right:20px;">Exporter</button>
+  <button id="importBtn" class="btn btn-secondary"
+          style="position:fixed;bottom:140px;right:20px;">Importer</button>
+  <input type="file" id="importInput" accept=".json" style="display:none">
 </main>
 <button id="fab" aria-label="Ajouter un prompt">+ Prompt</button>
 <!-- MODAL ÉDITION PROMPT -->
@@ -349,6 +355,45 @@ window.testApiKeyOpenAI=async function(k){
  if(!res.ok) throw new Error("Clé refusée");
  await res.json();
 };
+// ===== Exporter la base au format JSON =====
+const exportBtn = document.getElementById('exportBtn');
+exportBtn.addEventListener('click', () => {
+  const data = JSON.stringify(prompts, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'promptflow_prompts.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Export terminé ! 🎉');
+});
+
+// ===== Importer depuis un fichier JSON =====
+const importBtn   = document.getElementById('importBtn');
+const importInput = document.getElementById('importInput');
+
+importBtn.addEventListener('click', () => importInput.click());
+
+importInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (!Array.isArray(imported)) throw new Error('Format invalide');
+      prompts = imported;             // on remplace tout
+      Store.set(prompts);             // on sauvegarde
+      render();                       // on rafraîchit l’affichage
+      toast('Import réussi ! 🚀');
+    } catch (err) {
+      console.error(err);
+      toast('Erreur d’import : fichier invalide ❌');
+    }
+  };
+  reader.readAsText(file);
+});
 </script>
 </body>
 </html>
