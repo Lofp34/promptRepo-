@@ -7,163 +7,159 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Fira+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
- --analyse:#00D9FF; --concevoir:#FFB400; --decider:#FF4081;
- --creer:#8A2BE2;  --ameliorer:#32CD32; --bg:#1B365D; --bg2:#16202a;
- --text:#E6E6E6;  --text-dim:#9BA3AF; --radius:14px;
+ --analyse:#00D9FF; --concevoir:#FFB400; --decider:#FF4081;
+ --creer:#8A2BE2;  --ameliorer:#32CD32; --bg:#1B365D; --bg2:#16202a;
+ --text:#E6E6E6;  --text-dim:#9BA3AF; --radius:14px;
 }
 body{margin:0;display:flex;height:100vh;font-family:Inter,Arial,sans-serif;
- background:var(--bg);color:var(--text);}
+ background:var(--bg);color:var(--text);}
 button,input,select,textarea{font-family:inherit}
 .sidebar{width:68px;background:#0E151D;display:flex;flex-direction:column;
- align-items:center;padding:10px 0;gap:14px}
+ align-items:center;padding:10px 0;gap:14px}
 .icon-btn{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;
- justify-content:center;font-size:25px;cursor:pointer;border:none;background:transparent;
- transition:transform .15s,box-shadow .15s}
+ justify-content:center;font-size:25px;cursor:pointer;border:none;background:transparent;
+ transition:transform .15s,box-shadow .15s}
 .icon-btn.active{transform:scale(1.15);box-shadow:0 0 0 3px var(--text-dim)}
 .icon-btn:focus-visible{outline:2px solid var(--text)}
 .main{flex:1;padding:22px 18px 80px 18px;overflow-y:auto}
 h1{margin:0 0 14px;font-size:1.6rem}
 .topbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .select{background:var(--bg2);border:none;border-radius:var(--radius);padding:8px 12px;
- color:var(--text);font-size:1rem;}
+ color:var(--text);font-size:1rem;}
 .search{flex:1;min-width:180px;background:#0F1C27;border:none;border-radius:var(--radius);
- padding:8px 12px;color:var(--text);font-size:1rem;}
+ padding:8px 12px;color:var(--text);font-size:1rem;}
 .search::placeholder{color:#6B7280}
 #promptCount{font-size:.9rem;color:var(--text-dim)}
 #promptList{list-style:none;padding:0;margin:18px 0}
 .prompt{background:var(--bg2);padding:14px;border-left:6px solid var(--analyse);
- border-radius:var(--radius);margin-bottom:12px;display:flex;justify-content:space-between;gap:10px}
+ border-radius:var(--radius);margin-bottom:12px;display:flex;justify-content:space-between;gap:10px}
 .prompt-main{flex:1;min-width:0}
 .p-title{font-weight:600;margin-bottom:4px;word-break:break-word}
 .p-tags{font-size:.85rem;color:#00BDA4;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p-body{font-size:.95rem;line-height:1.4;white-space:pre-line;max-height:5.6em;overflow:hidden}
 .p-actions{display:flex;flex-direction:column;gap:6px}
 .icon{border:none;background:#243041;color:var(--text);border-radius:8px;width:38px;height:38px;
- display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
+ display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
 .icon:hover{background:#008EAA}
 .icon:focus-visible{outline:2px solid var(--text)}
 #fab{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,#008EAA,#00D9FF);
- border:none;border-radius:40px;padding:14px 28px;font-weight:700;font-size:1rem;color:#001;
- box-shadow:0 4px 20px #00d9ff70;cursor:pointer;z-index:5}
+ border:none;border-radius:40px;padding:14px 28px;font-weight:700;font-size:1rem;color:#001;
+ box-shadow:0 4px 20px #00d9ff70;cursor:pointer;z-index:5}
 #fab:focus-visible{outline:2px solid var(--text)}
 .overlay{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:10}
 .modal{background:#0F1C27;border-radius:var(--radius);padding:24px;width:95%;max-width:420px;
- color:var(--text);display:flex;flex-direction:column;gap:10px;max-height:92vh;overflow:auto}
+ color:var(--text);display:flex;flex-direction:column;gap:10px;max-height:92vh;overflow:auto}
 .modal input,.modal textarea,.modal select{background:#09131C;border:none;border-radius:var(--radius);
- color:var(--text);padding:9px 11px;font-size:1rem}
+ color:var(--text);padding:9px 11px;font-size:1rem}
 .modal textarea{min-height:90px}
 .modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 .btn{border:none;border-radius:var(--radius);padding:9px 16px;font-weight:600;font-size:1rem;cursor:pointer}
 .btn-primary{background:var(--ameliorer);color:#05110B}
 .btn-secondary{background:#374151;color:var(--text)}
 .toast{position:fixed;bottom:24px;right:24px;min-width:160px;background:#111820;
- color:var(--text);padding:12px 16px;border-radius:var(--radius);opacity:0;pointer-events:none;
- transition:opacity .3s;z-index:20}
+ color:var(--text);padding:12px 16px;border-radius:var(--radius);opacity:0;pointer-events:none;
+ transition:opacity .3s;z-index:20}
 #apiKeyModal label{margin-bottom:8px}
 #apiKeyInp{font-family:'Fira Mono',monospace;}
 .api-key-status{font-size:.93em;margin-top:-5px;margin-bottom:8px;}
 .api-key-ok{color:#32CD32;}
 .api-key-bad{color:#FF4081;}
 @media (max-width:580px){
- .sidebar{display:none}
- .main{padding-left:10px;padding-right:10px}
+ .sidebar{display:none}
+ .main{padding-left:10px;padding-right:10px}
 }
 </style>
 </head>
 <body>
 <nav class="sidebar" id="sidebar" aria-label="Sens Homo Promptus"></nav>
 <main class="main">
- <div class="topbar">
-   <h1 id="mainTitle" style="margin-right:auto">Analyse</h1>
-   <select id="actionSelect" class="select" aria-label="Sélectionner une action"></select>
-   <span id="promptCount"></span>
-   <input id="search" class="search" type="search" placeholder="Rechercher… ( / )" aria-label="Recherche">
-   <button id="apiKeyBtn" class="icon-btn" style="background:#2d3843;font-size:18px;margin-left:7px" title="Configurer la clé OpenAI" aria-label="Configurer la clé API OpenAI">🔑</button>
- </div>
- <ul id="promptList"></ul>
-  <!-- Export / Import JSON -->
-  <button id="exportBtn" class="btn btn-secondary"
-          style="position:fixed;bottom:100px;right:20px;">Exporter</button>
-  <button id="importBtn" class="btn btn-secondary"
-          style="position:fixed;bottom:140px;right:20px;">Importer</button>
-  <input type="file" id="importInput" accept=".json" style="display:none">
+ <div class="topbar">
+   <h1 id="mainTitle" style="margin-right:auto">Analyse</h1>
+   <select id="actionSelect" class="select" aria-label="Sélectionner une action"></select>
+   <span id="promptCount"></span>
+   <input id="search" class="search" type="search" placeholder="Rechercher… ( / )" aria-label="Recherche">
+   <button id="apiKeyBtn" class="icon-btn" style="background:#2d3843;font-size:18px;margin-left:7px" title="Configurer la clé OpenAI" aria-label="Configurer la clé API OpenAI">🔑</button>
+ </div>
+ <ul id="promptList"></ul>
+    <button id="exportBtn" class="btn btn-secondary"
+          style="position:fixed;bottom:100px;right:20px;">Exporter</button>
+  <button id="importBtn" class="btn btn-secondary"
+          style="position:fixed;bottom:140px;right:20px;">Importer</button>
+  <input type="file" id="importInput" accept=".json" style="display:none">
 </main>
 <button id="fab" aria-label="Ajouter un prompt">+ Prompt</button>
-<!-- MODAL ÉDITION PROMPT -->
 <div class="overlay" id="modalOv">
- <form class="modal" id="editModal" autocomplete="off">
-   <label>Famille (Sens)
-     <select id="senseSel" required></select>
-   </label>
-   <label>Action
-     <select id="actionSel" required></select>
-   </label>
-   <label>Titre
-     <input id="titleInp" placeholder="Titre du prompt" required>
-   </label>
-   <label>Tags (virgule)
-     <input id="tagsInp" placeholder="tag1, tag2">
-   </label>
-   <label>Prompt
-     <textarea id="promptInp" placeholder="Colle ton prompt ici…" required></textarea>
-   </label>
-   <div class="actions">
-     <button type="submit" class="btn btn-primary">Enregistrer</button>
-     <button type="button" class="btn btn-secondary" data-close>Annuler</button>
-   </div>
- </form>
+ <form class="modal" id="editModal" autocomplete="off">
+   <label>Famille (Sens)
+     <select id="senseSel" required></select>
+   </label>
+   <label>Action
+     <select id="actionSel" required></select>
+   </label>
+   <label>Titre
+     <input id="titleInp" placeholder="Titre du prompt" required>
+   </label>
+   <label>Tags (virgule)
+     <input id="tagsInp" placeholder="tag1, tag2">
+   </label>
+   <label>Prompt
+     <textarea id="promptInp" placeholder="Colle ton prompt ici…" required></textarea>
+   </label>
+   <div class="actions">
+     <button type="submit" class="btn btn-primary">Enregistrer</button>
+     <button type="button" class="btn btn-secondary" data-close>Annuler</button>
+   </div>
+ </form>
 </div>
-<!-- MODAL TEST SANDBOX -->
 <div class="overlay" id="sandboxOv">
- <div class="modal" id="sandboxModal" role="dialog" aria-modal="true">
-   <h3 style="margin:0">Test du prompt (OpenAI)</h3>
-   <div id="sandboxLoader" style="display:none;color:#00D9FF;font-size:1.2em">⏳ Génération…</div>
-   <pre id="sandboxOut" style="font-family:'Fira Mono',monospace;background:#09131C;
-     padding:12px;border-radius:var(--radius);white-space:pre-wrap"></pre>
-   <div class="actions">
-     <button class="btn btn-secondary" data-close>Fermer</button>
-   </div>
- </div>
+ <div class="modal" id="sandboxModal" role="dialog" aria-modal="true">
+   <h3 style="margin:0">Test du prompt (OpenAI)</h3>
+   <div id="sandboxLoader" style="display:none;color:#00D9FF;font-size:1.2em">⏳ Génération…</div>
+   <pre id="sandboxOut" style="font-family:'Fira Mono',monospace;background:#09131C;
+     padding:12px;border-radius:var(--radius);white-space:pre-wrap"></pre>
+   <div class="actions">
+     <button class="btn btn-secondary" data-close>Fermer</button>
+   </div>
+ </div>
 </div>
-<!-- MODAL API KEY -->
 <div class="overlay" id="apiKeyOv">
- <form class="modal" id="apiKeyModal" style="gap:12px" autocomplete="off">
-   <label for="apiKeyInp">Clé API OpenAI
-    <input id="apiKeyInp" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" style="margin-top:7px" required>
-   </label>
-   <div class="api-key-status" id="apiKeyStatus"></div>
-   <div class="actions">
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-    <button type="button" class="btn btn-secondary" data-close>Annuler</button>
-   </div>
-   <div style="font-size:.93em;color:#9BA3AF">La clé n’est <b>jamais envoyée</b> ailleurs que chez OpenAI.<br>Stockée dans ton navigateur uniquement.</div>
- </form>
+ <form class="modal" id="apiKeyModal" style="gap:12px" autocomplete="off">
+   <label for="apiKeyInp">Clé API OpenAI
+    <input id="apiKeyInp" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" style="margin-top:7px" required>
+   </label>
+   <div class="api-key-status" id="apiKeyStatus"></div>
+   <div class="actions">
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <button type="button" class="btn btn-secondary" data-close>Annuler</button>
+   </div>
+   <div style="font-size:.93em;color:#9BA3AF">La clé n’est <b>jamais envoyée</b> ailleurs que chez OpenAI.<br>Stockée dans ton navigateur uniquement.</div>
+ </form>
 </div>
 <div class="toast" id="toast"></div>
 <script>
 const HP = {
- senses:[
-  {id:'analyse', label:'Analyse', emoji:'🧐', color:'var(--analyse)',
-   actions:['Concurrence','Marché','KPI','Docs','Pré-RDV','Risques']},
-  {id:'concevoir',label:'Concevoir',emoji:'🧩',color:'var(--concevoir)',
-   actions:['Workflow','Plan projet','Offre','Pédagogie','Storyboard']},
-  {id:'decider',label:'Décider',emoji:'⚖️',color:'var(--decider)',
-   actions:['Priorités','Choix strat.','Risques','Pricing','Roadmap']},
-  {id:'creer',label:'Créer',emoji:'🎨',color:'var(--creer)',
-   actions:['Copy','Scripts','Visuels','Idéation','Storytelling']},
-  {id:'ameliorer',label:'Améliorer',emoji:'🔧',color:'var(--ameliorer)',
-   actions:['Relecture','Process','KPI','UX','Argumentaire']}
- ]
+ senses:[
+  {id:'analyse', label:'Analyse', emoji:'🧐', color:'var(--analyse)',
+   actions:['Concurrence','Marché','KPI','Docs','Pré-RDV','Risques']},
+  {id:'concevoir',label:'Concevoir',emoji:'🧩',color:'var(--concevoir)',
+   actions:['Workflow','Plan projet','Offre','Pédagogie','Storyboard']},
+  {id:'decider',label:'Décider',emoji:'⚖️',color:'var(--decider)',
+   actions:['Priorités','Choix strat.','Risques','Pricing','Roadmap']},
+  {id:'creer',label:'Créer',emoji:'🎨',color:'var(--creer)',
+   actions:['Copy','Scripts','Visuels','Idéation','Storytelling']},
+  {id:'ameliorer',label:'Améliorer',emoji:'🔧',color:'var(--ameliorer)',
+   actions:['Relecture','Process','KPI','UX','Argumentaire']}
+ ]
 };
 const lsKey='hp_prompts_v4'; const stateKey='hp_state_v1'; const apiKeyKey='hp_apikey_v1';
 const Store={
- get(){return JSON.parse(localStorage.getItem(lsKey)||'[]')},
- set(arr){localStorage.setItem(lsKey,JSON.stringify(arr))},
- getState(){return JSON.parse(localStorage.getItem(stateKey)||'{}')},
- setState(obj){localStorage.setItem(stateKey,JSON.stringify(obj))},
- getAPI(){return localStorage.getItem(apiKeyKey)||''},
- setAPI(key){localStorage.setItem(apiKeyKey,key)},
- clearAPI(){localStorage.removeItem(apiKeyKey)}
+ get(){return JSON.parse(localStorage.getItem(lsKey)||'[]')},
+ set(arr){localStorage.setItem(lsKey,JSON.stringify(arr))},
+ getState(){return JSON.parse(localStorage.getItem(stateKey)||'{}')},
+ setState(obj){localStorage.setItem(stateKey,JSON.stringify(obj))},
+ getAPI(){return localStorage.getItem(apiKeyKey)||''},
+ setAPI(key){localStorage.setItem(apiKeyKey,key)},
+ clearAPI(){localStorage.removeItem(apiKeyKey)}
 };
 let prompts=Store.get(); let uiState={...{sense:0,action:0},...Store.getState()};
 const sidebar=$('#sidebar'); const actionSelect=$('#actionSelect');
@@ -179,220 +175,221 @@ const apiKeyOv=$('#apiKeyOv'); const apiKeyModal=$('#apiKeyModal'); const apiKey
 const apiKeyStatus=$('#apiKeyStatus'); const apiKeyBtn=$('#apiKeyBtn');
 function $(sel){return document.querySelector(sel);}
 function toast(msg){
- toastEl.textContent=msg; toastEl.style.opacity=1;
- setTimeout(()=>toastEl.style.opacity=0,2500);
+ toastEl.textContent=msg; toastEl.style.opacity=1;
+ setTimeout(()=>toastEl.style.opacity=0,2500);
 }
 function escHtml(str){return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;', '"':'&quot;',"'":'&#039;'}[m]));}
-// Sidebar : création dynamique
+// Sidebar : création dynamique
 sidebar.innerHTML = ""; // sécurité si multi-init
 HP.senses.forEach((s,i)=>{
- const btn=document.createElement('button');
- btn.className='icon-btn'; btn.innerHTML=`<span role="img" aria-label="${s.label}">${s.emoji}</span>`;
- btn.style.background=s.color; btn.onclick=()=>selectSense(i);
- btn.addEventListener('keydown',e=>{if(e.key==='ArrowRight')selectSense((i+1)%5); if(e.key==='ArrowLeft')selectSense((i+4)%5)});
- sidebar.appendChild(btn);
+ const btn=document.createElement('button');
+ btn.className='icon-btn'; btn.innerHTML=`<span role="img" aria-label="${s.label}">${s.emoji}</span>`;
+ btn.style.background=s.color; btn.onclick=()=>selectSense(i);
+ btn.addEventListener('keydown',e=>{if(e.key==='ArrowRight')selectSense((i+1)%5); if(e.key==='ArrowLeft')selectSense((i+4)%5)});
+ sidebar.appendChild(btn);
 });
 function selectSense(idx){
- uiState.sense=idx; actionSelectFill(); render();
- [...sidebar.children].forEach((b,i)=>b.classList.toggle('active',i===idx));
- Store.setState(uiState);
+ uiState.sense=idx; actionSelectFill(); render();
+ [...sidebar.children].forEach((b,i)=>b.classList.toggle('active',i===idx));
+ Store.setState(uiState);
 }
 function actionSelectFill(){
- actionSelect.innerHTML='';
- HP.senses[uiState.sense].actions.forEach((a,i)=>{
-  const opt=document.createElement('option'); opt.value=i; opt.textContent=a;
-  actionSelect.appendChild(opt);
- });
- actionSelect.selectedIndex=uiState.action=0;
+ actionSelect.innerHTML='';
+ HP.senses[uiState.sense].actions.forEach((a,i)=>{
+  const opt=document.createElement('option'); opt.value=i; opt.textContent=a;
+  actionSelect.appendChild(opt);
+ });
+ actionSelect.selectedIndex=uiState.action=0;
 }
 actionSelect.onchange=e=>{uiState.action=e.target.selectedIndex; Store.setState(uiState); render();}
 function render(){
- mainTitle.textContent=HP.senses[uiState.sense].label;
- const filter=searchInput.value.trim().toLowerCase();
- const curSense=HP.senses[uiState.sense].id;
- const curAction=HP.senses[uiState.sense].actions[uiState.action];
- const list=prompts.filter(p=>p.sense===curSense&&p.action===curAction
-  &&(p.title.toLowerCase().includes(filter)||p.tags.toLowerCase().includes(filter)||p.prompt.toLowerCase().includes(filter)));
- countEl.textContent=`${list.length} prompt${list.length>1?'s':''}`;
- promptList.innerHTML='';
- list.forEach((p,idx)=>{
-  const li=document.createElement('li'); li.className='prompt';
-  li.style.borderColor=`var(--${p.sense})`;
-  li.innerHTML=`
-   <div class="prompt-main">
-     <div class="p-title">${escHtml(p.title)}</div>
-     <div class="p-tags">${escHtml(p.tags)}</div>
-     <div class="p-body">${escHtml(p.prompt)}</div>
-   </div>
-   <div class="p-actions">
-     <button class="icon" aria-label="Éditer" onclick="editPrompt(${prompts.indexOf(p)})">✏️</button>
-     <button class="icon" aria-label="Supprimer" onclick="delPrompt(${prompts.indexOf(p)})">🗑️</button>
-     <button class="icon" aria-label="Copier" onclick="copyPrompt(${prompts.indexOf(p)})">📋</button>
-     <button class="icon" aria-label="Test (mock)" onclick="testPrompt(${prompts.indexOf(p)},false)">🧪</button>
-     <button class="icon" aria-label="Test LLM" onclick="testPrompt(${prompts.indexOf(p)},true)">🤖</button>
-   </div>`;
-  promptList.appendChild(li);
- });
+ mainTitle.textContent=HP.senses[uiState.sense].label;
+ const filter=searchInput.value.trim().toLowerCase();
+ const curSense=HP.senses[uiState.sense].id;
+ const curAction=HP.senses[uiState.sense].actions[uiState.action];
+ const list=prompts.filter(p=>p.sense===curSense&&p.action===curAction
+  &&(p.title.toLowerCase().includes(filter)||p.tags.toLowerCase().includes(filter)||p.prompt.toLowerCase().includes(filter)));
+ countEl.textContent=`${list.length} prompt${list.length>1?'s':''}`;
+ promptList.innerHTML='';
+ list.forEach((p,idx)=>{
+  const li=document.createElement('li'); li.className='prompt';
+  li.style.borderColor=`var(--${p.sense})`;
+  li.innerHTML=`
+   <div class="prompt-main">
+     <div class="p-title">${escHtml(p.title)}</div>
+     <div class="p-tags">${escHtml(p.tags)}</div>
+     <div class="p-body">${escHtml(p.prompt)}</div>
+   </div>
+   <div class="p-actions">
+     <button class="icon" aria-label="Éditer" onclick="editPrompt(${prompts.indexOf(p)})">✏️</button>
+     <button class="icon" aria-label="Supprimer" onclick="delPrompt(${prompts.indexOf(p)})">🗑️</button>
+     <button class="icon" aria-label="Copier" onclick="copyPrompt(${prompts.indexOf(p)})">📋</button>
+     <button class="icon" aria-label="Test (mock)" onclick="testPrompt(${prompts.indexOf(p)},false)">🧪</button>
+     <button class="icon" aria-label="Test LLM" onclick="testPrompt(${prompts.indexOf(p)},true)">🤖</button>
+   </div>`;
+  promptList.appendChild(li);
+ });
 }
 document.addEventListener('keydown',e=>{
- if(e.key==='/' && document.activeElement!==searchInput){e.preventDefault();searchInput.focus();}
- if(e.key==='n' && !modalOv.open && !sandboxOv.open){openModal();}
+ if(e.key==='/' && document.activeElement!==searchInput){e.preventDefault();searchInput.focus();}
+ if(e.key==='n' && !modalOv.open && !sandboxOv.open){openModal();}
 });
 searchInput.oninput=render;
 window.editPrompt=i=>openModal(prompts[i],i);
 window.delPrompt=i=>{if(confirm('Supprimer ?')){prompts.splice(i,1);Store.set(prompts);toast('Supprimé');render();}};
 window.copyPrompt=i=>navigator.clipboard.writeText(prompts[i].prompt).then(()=>toast('Copié'));
 window.testPrompt=(i,llm)=>{
- sandboxLoader.style.display=llm?'block':'none';
- sandboxOut.textContent=llm?'':'[Simulation]\n\n'+prompts[i].prompt.slice(0,600)+'\n\n[Réponse simulée LLM]';
- openOverlay(sandboxOv);
- if(llm) testPromptWithOpenAI(prompts[i].prompt);
+ sandboxLoader.style.display=llm?'block':'none';
+ sandboxOut.textContent=llm?'':'[Simulation]\n\n'+prompts[i].prompt.slice(0,600)+'\n\n[Réponse simulée LLM]';
+ openOverlay(sandboxOv);
+ if(llm) testPromptWithOpenAI(prompts[i].prompt);
 };
 fab.onclick = () => {
-  // Garantit l’ouverture de la modale création prompt avec sens/action courants
-  openModal({
-    sense: HP.senses[uiState.sense].id,
-    action: HP.senses[uiState.sense].actions[uiState.action],
-    title: "",
-    tags: "",
-    prompt: ""
-  }, null);
+  // Garantit l’ouverture de la modale création prompt avec sens/action courants
+  openModal({
+    sense: HP.senses[uiState.sense].id,
+    action: HP.senses[uiState.sense].actions[uiState.action],
+    title: "",
+    tags: "",
+    prompt: ""
+  }, null);
 };
 function openModal(p = {
-  sense: HP.senses[0].id,
-  action: HP.senses[0].actions[0],
-  title: '',
-  tags: '',
-  prompt: ''
+  sense: HP.senses[0].id,
+  action: HP.senses[0].actions[0],
+  title: '',
+  tags: '',
+  prompt: ''
 }, idx = null) {
-  editForm.dataset.idx = idx;
-  senseSel.innerHTML = '';
-  HP.senses.forEach(s=>{
-    const o=document.createElement('option');
-    o.value=s.id; o.textContent=s.label;
-    if(s.id===p.sense) o.selected=true;
-    senseSel.appendChild(o);
-  });
-  actionSel.innerHTML='';
-  const actList = HP.senses.find(s=>s.id===p.sense).actions;
-  actList.forEach(a=>{
-    const o=document.createElement('option');
-    o.value=a; o.textContent=a;
-    if(a===p.action) o.selected=true;
-    actionSel.appendChild(o);
-  });
-  titleInp.value = p.title || "";
-  tagsInp.value = p.tags || "";
-  promptInp.value = p.prompt || "";
-  openOverlay(modalOv);
-  setTimeout(() => { titleInp.focus(); }, 80);
+  editForm.dataset.idx = idx;
+  senseSel.innerHTML = '';
+  HP.senses.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.id; o.textContent=s.label;
+    if(s.id===p.sense) o.selected=true;
+    senseSel.appendChild(o);
+  });
+  actionSel.innerHTML='';
+  const actList = HP.senses.find(s=>s.id===p.sense).actions;
+  actList.forEach(a=>{
+    const o=document.createElement('option');
+    o.value=a; o.textContent=a;
+    if(a===p.action) o.selected=true;
+    actionSel.appendChild(o);
+  });
+  titleInp.value = p.title || "";
+  tagsInp.value = p.tags || "";
+  promptInp.value = p.prompt || "";
+  openOverlay(modalOv);
+  setTimeout(() => { titleInp.focus(); }, 80);
 }
 senseSel.onchange=()=>{
-  actionSel.innerHTML='';
-  const acts = HP.senses.find(s=>s.id===senseSel.value).actions;
-  acts.forEach(a=>{
-    const o=document.createElement('option');o.value=a;o.textContent=a;actionSel.appendChild(o);
-  });
+  actionSel.innerHTML='';
+  const acts = HP.senses.find(s=>s.id===senseSel.value).actions;
+  acts.forEach(a=>{
+    const o=document.createElement('option');o.value=a;o.textContent=a;actionSel.appendChild(o);
+  });
 };
 editForm.onsubmit=e=>{
- e.preventDefault();
- const idx=editForm.dataset.idx;
- const obj={sense:senseSel.value,action:actionSel.value,
-  title:titleInp.value.trim(),tags:tagsInp.value.trim(),prompt:promptInp.value.trim()};
- if(idx==='null'||idx===null)prompts.unshift(obj); else prompts[idx]=obj;
- Store.set(prompts);toast('Enregistré');closeOverlay(modalOv);render();
+ e.preventDefault();
+ const idx=editForm.dataset.idx;
+ const obj={sense:senseSel.value,action:actionSel.value,
+  title:titleInp.value.trim(),tags:tagsInp.value.trim(),prompt:promptInp.value.trim()};
+ if(idx==='null'||idx===null)prompts.unshift(obj); else prompts[idx]=obj;
+ Store.set(prompts);toast('Enregistré');closeOverlay(modalOv);render();
 };
 function openOverlay(ov){ov.style.display='flex';ov.open=true;
- ov.querySelector('[data-close]')?.focus();}
+ ov.querySelector('[data-close]')?.focus();}
 function closeOverlay(ov){ov.style.display='none';ov.open=false;}
 document.body.addEventListener('click',e=>{
- if(e.target.matches('[data-close]'))closeOverlay(e.target.closest('.overlay'));
- if(e.target.classList.contains('overlay'))closeOverlay(e.target);
+ if(e.target.matches('[data-close]'))closeOverlay(e.target.closest('.overlay'));
+  // MODIFICATION ICI: Ne ferme l'overlay que si ce n'est PAS l'overlay de la modale d'édition de prompt (modalOv).
+ if(e.target.classList.contains('overlay') && e.target.id !== 'modalOv')closeOverlay(e.target);
 });
 document.addEventListener('keydown',e=>{
- if(e.key==='Escape'){[modalOv,sandboxOv,apiKeyOv].forEach(o=>o.open&&closeOverlay(o));}
+ if(e.key==='Escape'){[modalOv,sandboxOv,apiKeyOv].forEach(o=>o.open&&closeOverlay(o));}
 });
 actionSelectFill(); selectSense(uiState.sense); render();
 /* API KEY MODAL */
 apiKeyBtn.onclick=()=>{apiKeyStatus.textContent='';apiKeyInp.value=Store.getAPI()||'';openOverlay(apiKeyOv);apiKeyInp.focus();};
 apiKeyModal.onsubmit=async e=>{
- e.preventDefault();
- const k=apiKeyInp.value.trim();
- if(!/^sk-[A-Za-z0-9]{20,}/.test(k)){apiKeyStatus.textContent="Clé invalide";apiKeyStatus.className="api-key-status api-key-bad";return;}
- apiKeyStatus.textContent='Test clé…';apiKeyStatus.className="api-key-status";
- try{
-   await testApiKeyOpenAI(k);
-   Store.setAPI(k);apiKeyStatus.textContent="Clé validée !";apiKeyStatus.className="api-key-status api-key-ok";
-   setTimeout(()=>{closeOverlay(apiKeyOv);toast("Clé OpenAI sauvegardée")},800);
- }catch{
-   apiKeyStatus.textContent="Clé refusée par OpenAI";apiKeyStatus.className="api-key-status api-key-bad";
- }
+ e.preventDefault();
+ const k=apiKeyInp.value.trim();
+ if(!/^sk-[A-Za-z0-9]{20,}/.test(k)){apiKeyStatus.textContent="Clé invalide";apiKeyStatus.className="api-key-status api-key-bad";return;}
+ apiKeyStatus.textContent='Test clé…';apiKeyStatus.className="api-key-status";
+ try{
+   await testApiKeyOpenAI(k);
+   Store.setAPI(k);apiKeyStatus.textContent="Clé validée !";apiKeyStatus.className="api-key-status api-key-ok";
+   setTimeout(()=>{closeOverlay(apiKeyOv);toast("Clé OpenAI sauvegardée")},800);
+ }catch{
+   apiKeyStatus.textContent="Clé refusée par OpenAI";apiKeyStatus.className="api-key-status api-key-bad";
+ }
 };
 window.testPromptWithOpenAI=async function(prompt){
- const key=Store.getAPI();
- if(!key){closeOverlay(sandboxOv);openOverlay(apiKeyOv);apiKeyInp.focus();toast("Configure ta clé OpenAI");return;}
- sandboxLoader.style.display='block';
- try{
-  const body={model:"gpt-4o",messages:[{role:"user",content:prompt}],max_tokens:400,temperature:0.7};
-  const res=await fetch("https://api.openai.com/v1/chat/completions",{
-   method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
-   body:JSON.stringify(body)
-  });
-  if(!res.ok) throw new Error("API refuse");
-  const data=await res.json();
-  let rep=(data.choices?.[0]?.message?.content)||"(Réponse vide)";
-  sandboxOut.textContent=rep.trim();
- }catch(e){
-  sandboxOut.textContent="❌ Erreur OpenAI : "+e;
- }finally{sandboxLoader.style.display='none';}
+ const key=Store.getAPI();
+ if(!key){closeOverlay(sandboxOv);openOverlay(apiKeyOv);apiKeyInp.focus();toast("Configure ta clé OpenAI");return;}
+ sandboxLoader.style.display='block';
+ try{
+  const body={model:"gpt-4o",messages:[{role:"user",content:prompt}],max_tokens:400,temperature:0.7};
+  const res=await fetch("https://api.openai.com/v1/chat/completions",{
+   method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
+   body:JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error("API refuse");
+  const data=await res.json();
+  let rep=(data.choices?.[0]?.message?.content)||"(Réponse vide)";
+  sandboxOut.textContent=rep.trim();
+ }catch(e){
+  sandboxOut.textContent="❌ Erreur OpenAI : "+e;
+ }finally{sandboxLoader.style.display='none';}
 };
 window.testApiKeyOpenAI=async function(k){
- const body={model:"gpt-3.5-turbo",messages:[{role:"user",content:"Hello!"}],max_tokens:2,temperature:0.1};
- const res=await fetch("https://api.openai.com/v1/chat/completions",{
-  method:"POST",headers:{"Authorization":"Bearer "+k,"Content-Type":"application/json"},
-  body:JSON.stringify(body)
- });
- if(!res.ok) throw new Error("Clé refusée");
- await res.json();
+ const body={model:"gpt-3.5-turbo",messages:[{role:"user",content:"Hello!"}],max_tokens:2,temperature:0.1};
+ const res=await fetch("https://api.openai.com/v1/chat/completions",{
+  method:"POST",headers:{"Authorization":"Bearer "+k,"Content-Type":"application/json"},
+  body:JSON.stringify(body)
+ });
+ if(!res.ok) throw new Error("Clé refusée");
+ await res.json();
 };
 // ===== Exporter la base au format JSON =====
 const exportBtn = document.getElementById('exportBtn');
 exportBtn.addEventListener('click', () => {
-  const data = JSON.stringify(prompts, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'promptflow_prompts.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('Export terminé ! 🎉');
+  const data = JSON.stringify(prompts, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'promptflow_prompts.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Export terminé ! 🎉');
 });
 
 // ===== Importer depuis un fichier JSON =====
-const importBtn   = document.getElementById('importBtn');
+const importBtn   = document.getElementById('importBtn');
 const importInput = document.getElementById('importInput');
 
 importBtn.addEventListener('click', () => importInput.click());
 
 importInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const imported = JSON.parse(reader.result);
-      if (!Array.isArray(imported)) throw new Error('Format invalide');
-      prompts = imported;             // on remplace tout
-      Store.set(prompts);             // on sauvegarde
-      render();                       // on rafraîchit l’affichage
-      toast('Import réussi ! 🚀');
-    } catch (err) {
-      console.error(err);
-      toast('Erreur d’import : fichier invalide ❌');
-    }
-  };
-  reader.readAsText(file);
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const imported = JSON.parse(reader.result);
+      if (!Array.isArray(imported)) throw new Error('Format invalide');
+      prompts = imported;             // on remplace tout
+      Store.set(prompts);             // on sauvegarde
+      render();                       // on rafraîchit l’affichage
+      toast('Import réussi ! 🚀');
+    } catch (err) {
+      console.error(err);
+      toast('Erreur d’import : fichier invalide ❌');
+    }
+  };
+  reader.readAsText(file);
 });
 </script>
 </body>
