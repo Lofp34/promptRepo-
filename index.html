@@ -1,396 +1,721 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PromptFlow HP</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Fira+Mono&display=swap" rel="stylesheet">
-<style>
-:root{
- --analyse:#00D9FF; --concevoir:#FFB400; --decider:#FF4081;
- --creer:#8A2BE2;  --ameliorer:#32CD32; --bg:#1B365D; --bg2:#16202a;
- --text:#E6E6E6;  --text-dim:#9BA3AF; --radius:14px;
-}
-body{margin:0;display:flex;height:100vh;font-family:Inter,Arial,sans-serif;
- background:var(--bg);color:var(--text);}
-button,input,select,textarea{font-family:inherit}
-.sidebar{width:68px;background:#0E151D;display:flex;flex-direction:column;
- align-items:center;padding:10px 0;gap:14px}
-.icon-btn{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;
- justify-content:center;font-size:25px;cursor:pointer;border:none;background:transparent;
- transition:transform .15s,box-shadow .15s}
-.icon-btn.active{transform:scale(1.15);box-shadow:0 0 0 3px var(--text-dim)}
-.icon-btn:focus-visible{outline:2px solid var(--text)}
-.main{flex:1;padding:22px 18px 80px 18px;overflow-y:auto}
-h1{margin:0 0 14px;font-size:1.6rem}
-.topbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.select{background:var(--bg2);border:none;border-radius:var(--radius);padding:8px 12px;
- color:var(--text);font-size:1rem;}
-.search{flex:1;min-width:180px;background:#0F1C27;border:none;border-radius:var(--radius);
- padding:8px 12px;color:var(--text);font-size:1rem;}
-.search::placeholder{color:#6B7280}
-#promptCount{font-size:.9rem;color:var(--text-dim)}
-#promptList{list-style:none;padding:0;margin:18px 0}
-.prompt{background:var(--bg2);padding:14px;border-left:6px solid var(--analyse);
- border-radius:var(--radius);margin-bottom:12px;display:flex;justify-content:space-between;gap:10px}
-.prompt-main{flex:1;min-width:0}
-.p-title{font-weight:600;margin-bottom:4px;word-break:break-word}
-.p-tags{font-size:.85rem;color:#00BDA4;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.p-body{font-size:.95rem;line-height:1.4;white-space:pre-line;max-height:5.6em;overflow:hidden}
-.p-actions{display:flex;flex-direction:column;gap:6px}
-.icon{border:none;background:#243041;color:var(--text);border-radius:8px;width:38px;height:38px;
- display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
-.icon:hover{background:#008EAA}
-.icon:focus-visible{outline:2px solid var(--text)}
-#fab{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,#008EAA,#00D9FF);
- border:none;border-radius:40px;padding:14px 28px;font-weight:700;font-size:1rem;color:#001;
- box-shadow:0 4px 20px #00d9ff70;cursor:pointer;z-index:5}
-#fab:focus-visible{outline:2px solid var(--text)}
-.overlay{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:10}
-.modal{background:#0F1C27;border-radius:var(--radius);padding:24px;width:95%;max-width:420px;
- color:var(--text);display:flex;flex-direction:column;gap:10px;max-height:92vh;overflow:auto}
-.modal input,.modal textarea,.modal select{background:#09131C;border:none;border-radius:var(--radius);
- color:var(--text);padding:9px 11px;font-size:1rem}
-.modal textarea{min-height:90px}
-.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-.btn{border:none;border-radius:var(--radius);padding:9px 16px;font-weight:600;font-size:1rem;cursor:pointer}
-.btn-primary{background:var(--ameliorer);color:#05110B}
-.btn-secondary{background:#374151;color:var(--text)}
-.toast{position:fixed;bottom:24px;right:24px;min-width:160px;background:#111820;
- color:var(--text);padding:12px 16px;border-radius:var(--radius);opacity:0;pointer-events:none;
- transition:opacity .3s;z-index:20}
-#apiKeyModal label{margin-bottom:8px}
-#apiKeyInp{font-family:'Fira Mono',monospace;}
-.api-key-status{font-size:.93em;margin-top:-5px;margin-bottom:8px;}
-.api-key-ok{color:#32CD32;}
-.api-key-bad{color:#FF4081;}
-@media (max-width:580px){
- .sidebar{display:none}
- .main{padding-left:10px;padding-right:10px}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Prompts Précieux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Styles personnalisés pour compléter Tailwind */
+        body {
+            font-family: 'Inter', sans-serif; /* Assurez-vous que la police Inter est chargée ou utilisez une police de repli */
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.success {
+            background-color: #28a745; /* Vert */
+        }
+        .toast.error {
+            background-color: #dc3545; /* Rouge */
+        }
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 900;
+            display: none; /* Caché par défaut */
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 901;
+            width: 90%;
+            max-width: 400px;
+            display: none; /* Caché par défaut */
+        }
+        [v-cloak] {
+            display: none;
+        }
+        /* Amélioration de l'apparence des champs de formulaire */
+        input[type="text"], input[type="search"], select, textarea {
+            @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm;
+        }
+        label {
+            @apply block text-sm font-medium text-gray-700 mb-1;
+        }
+        .tag {
+            @apply inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full;
+        }
+        .tag-input-container {
+            @apply flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md;
+        }
+        .tag-input {
+            @apply flex-grow border-none focus:ring-0 p-0;
+        }
+    </style>
 </head>
-<body>
-<nav class="sidebar" id="sidebar" aria-label="Sens Homo Promptus"></nav>
-<main class="main">
- <div class="topbar">
-   <h1 id="mainTitle" style="margin-right:auto">Analyse</h1>
-   <select id="actionSelect" class="select" aria-label="Sélectionner une action"></select>
-   <span id="promptCount"></span>
-   <input id="search" class="search" type="search" placeholder="Rechercher… ( / )" aria-label="Recherche">
-   <button id="apiKeyBtn" class="icon-btn" style="background:#2d3843;font-size:18px;margin-left:7px" title="Configurer la clé OpenAI" aria-label="Configurer la clé API OpenAI">🔑</button>
- </div>
- <ul id="promptList"></ul>
-    <button id="exportBtn" class="btn btn-secondary"
-          style="position:fixed;bottom:100px;right:20px;">Exporter</button>
-  <button id="importBtn" class="btn btn-secondary"
-          style="position:fixed;bottom:140px;right:20px;">Importer</button>
-  <input type="file" id="importInput" accept=".json" style="display:none">
-</main>
-<button id="fab" aria-label="Ajouter un prompt">+ Prompt</button>
-<div class="overlay" id="modalOv">
- <form class="modal" id="editModal" autocomplete="off">
-   <label>Famille (Sens)
-     <select id="senseSel" required></select>
-   </label>
-   <label>Action
-     <select id="actionSel" required></select>
-   </label>
-   <label>Titre
-     <input id="titleInp" placeholder="Titre du prompt" required>
-   </label>
-   <label>Tags (virgule)
-     <input id="tagsInp" placeholder="tag1, tag2">
-   </label>
-   <label>Prompt
-     <textarea id="promptInp" placeholder="Colle ton prompt ici…" required></textarea>
-   </label>
-   <div class="actions">
-     <button type="submit" class="btn btn-primary">Enregistrer</button>
-     <button type="button" class="btn btn-secondary" data-close>Annuler</button>
-   </div>
- </form>
-</div>
-<div class="overlay" id="sandboxOv">
- <div class="modal" id="sandboxModal" role="dialog" aria-modal="true">
-   <h3 style="margin:0">Test du prompt (OpenAI)</h3>
-   <div id="sandboxLoader" style="display:none;color:#00D9FF;font-size:1.2em">⏳ Génération…</div>
-   <pre id="sandboxOut" style="font-family:'Fira Mono',monospace;background:#09131C;
-     padding:12px;border-radius:var(--radius);white-space:pre-wrap"></pre>
-   <div class="actions">
-     <button class="btn btn-secondary" data-close>Fermer</button>
-   </div>
- </div>
-</div>
-<div class="overlay" id="apiKeyOv">
- <form class="modal" id="apiKeyModal" style="gap:12px" autocomplete="off">
-   <label for="apiKeyInp">Clé API OpenAI
-    <input id="apiKeyInp" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false" style="margin-top:7px" required>
-   </label>
-   <div class="api-key-status" id="apiKeyStatus"></div>
-   <div class="actions">
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-    <button type="button" class="btn btn-secondary" data-close>Annuler</button>
-   </div>
-   <div style="font-size:.93em;color:#9BA3AF">La clé n’est <b>jamais envoyée</b> ailleurs que chez OpenAI.<br>Stockée dans ton navigateur uniquement.</div>
- </form>
-</div>
-<div class="toast" id="toast"></div>
-<script>
-const HP = {
- senses:[
-  {id:'analyse', label:'Analyse', emoji:'🧐', color:'var(--analyse)',
-   actions:['Concurrence','Marché','KPI','Docs','Pré-RDV','Risques']},
-  {id:'concevoir',label:'Concevoir',emoji:'🧩',color:'var(--concevoir)',
-   actions:['Workflow','Plan projet','Offre','Pédagogie','Storyboard']},
-  {id:'decider',label:'Décider',emoji:'⚖️',color:'var(--decider)',
-   actions:['Priorités','Choix strat.','Risques','Pricing','Roadmap']},
-  {id:'creer',label:'Créer',emoji:'🎨',color:'var(--creer)',
-   actions:['Copy','Scripts','Visuels','Idéation','Storytelling']},
-  {id:'ameliorer',label:'Améliorer',emoji:'🔧',color:'var(--ameliorer)',
-   actions:['Relecture','Process','KPI','UX','Argumentaire']}
- ]
-};
-const lsKey='hp_prompts_v4'; const stateKey='hp_state_v1'; const apiKeyKey='hp_apikey_v1';
-const Store={
- get(){return JSON.parse(localStorage.getItem(lsKey)||'[]')},
- set(arr){localStorage.setItem(lsKey,JSON.stringify(arr))},
- getState(){return JSON.parse(localStorage.getItem(stateKey)||'{}')},
- setState(obj){localStorage.setItem(stateKey,JSON.stringify(obj))},
- getAPI(){return localStorage.getItem(apiKeyKey)||''},
- setAPI(key){localStorage.setItem(apiKeyKey,key)},
- clearAPI(){localStorage.removeItem(apiKeyKey)}
-};
-let prompts=Store.get(); let uiState={...{sense:0,action:0},...Store.getState()};
-const sidebar=$('#sidebar'); const actionSelect=$('#actionSelect');
-const promptList=$('#promptList'); const mainTitle=$('#mainTitle');
-const countEl=$('#promptCount'); const searchInput=$('#search');
-const fab=$('#fab'); const toastEl=$('#toast');
-const modalOv=$('#modalOv'); const editForm=$('#editModal');
-const senseSel=$('#senseSel'); const actionSel=$('#actionSel');
-const titleInp=$('#titleInp'); const tagsInp=$('#tagsInp'); const promptInp=$('#promptInp');
-const sandboxOv=$('#sandboxOv'); const sandboxOut=$('#sandboxOut');
-const sandboxLoader=$('#sandboxLoader');
-const apiKeyOv=$('#apiKeyOv'); const apiKeyModal=$('#apiKeyModal'); const apiKeyInp=$('#apiKeyInp');
-const apiKeyStatus=$('#apiKeyStatus'); const apiKeyBtn=$('#apiKeyBtn');
-function $(sel){return document.querySelector(sel);}
-function toast(msg){
- toastEl.textContent=msg; toastEl.style.opacity=1;
- setTimeout(()=>toastEl.style.opacity=0,2500);
-}
-function escHtml(str){return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;', '"':'&quot;',"'":'&#039;'}[m]));}
-// Sidebar : création dynamique
-sidebar.innerHTML = ""; // sécurité si multi-init
-HP.senses.forEach((s,i)=>{
- const btn=document.createElement('button');
- btn.className='icon-btn'; btn.innerHTML=`<span role="img" aria-label="${s.label}">${s.emoji}</span>`;
- btn.style.background=s.color; btn.onclick=()=>selectSense(i);
- btn.addEventListener('keydown',e=>{if(e.key==='ArrowRight')selectSense((i+1)%5); if(e.key==='ArrowLeft')selectSense((i+4)%5)});
- sidebar.appendChild(btn);
-});
-function selectSense(idx){
- uiState.sense=idx; actionSelectFill(); render();
- [...sidebar.children].forEach((b,i)=>b.classList.toggle('active',i===idx));
- Store.setState(uiState);
-}
-function actionSelectFill(){
- actionSelect.innerHTML='';
- HP.senses[uiState.sense].actions.forEach((a,i)=>{
-  const opt=document.createElement('option'); opt.value=i; opt.textContent=a;
-  actionSelect.appendChild(opt);
- });
- actionSelect.selectedIndex=uiState.action=0;
-}
-actionSelect.onchange=e=>{uiState.action=e.target.selectedIndex; Store.setState(uiState); render();}
-function render(){
- mainTitle.textContent=HP.senses[uiState.sense].label;
- const filter=searchInput.value.trim().toLowerCase();
- const curSense=HP.senses[uiState.sense].id;
- const curAction=HP.senses[uiState.sense].actions[uiState.action];
- const list=prompts.filter(p=>p.sense===curSense&&p.action===curAction
-  &&(p.title.toLowerCase().includes(filter)||p.tags.toLowerCase().includes(filter)||p.prompt.toLowerCase().includes(filter)));
- countEl.textContent=`${list.length} prompt${list.length>1?'s':''}`;
- promptList.innerHTML='';
- list.forEach((p,idx)=>{
-  const li=document.createElement('li'); li.className='prompt';
-  li.style.borderColor=`var(--${p.sense})`;
-  li.innerHTML=`
-   <div class="prompt-main">
-     <div class="p-title">${escHtml(p.title)}</div>
-     <div class="p-tags">${escHtml(p.tags)}</div>
-     <div class="p-body">${escHtml(p.prompt)}</div>
-   </div>
-   <div class="p-actions">
-     <button class="icon" aria-label="Éditer" onclick="editPrompt(${prompts.indexOf(p)})">✏️</button>
-     <button class="icon" aria-label="Supprimer" onclick="delPrompt(${prompts.indexOf(p)})">🗑️</button>
-     <button class="icon" aria-label="Copier" onclick="copyPrompt(${prompts.indexOf(p)})">📋</button>
-     <button class="icon" aria-label="Test (mock)" onclick="testPrompt(${prompts.indexOf(p)},false)">🧪</button>
-     <button class="icon" aria-label="Test LLM" onclick="testPrompt(${prompts.indexOf(p)},true)">🤖</button>
-   </div>`;
-  promptList.appendChild(li);
- });
-}
-document.addEventListener('keydown',e=>{
- if(e.key==='/' && document.activeElement!==searchInput){e.preventDefault();searchInput.focus();}
- if(e.key==='n' && !modalOv.open && !sandboxOv.open){openModal();}
-});
-searchInput.oninput=render;
-window.editPrompt=i=>openModal(prompts[i],i);
-window.delPrompt=i=>{if(confirm('Supprimer ?')){prompts.splice(i,1);Store.set(prompts);toast('Supprimé');render();}};
-window.copyPrompt=i=>navigator.clipboard.writeText(prompts[i].prompt).then(()=>toast('Copié'));
-window.testPrompt=(i,llm)=>{
- sandboxLoader.style.display=llm?'block':'none';
- sandboxOut.textContent=llm?'':'[Simulation]\n\n'+prompts[i].prompt.slice(0,600)+'\n\n[Réponse simulée LLM]';
- openOverlay(sandboxOv);
- if(llm) testPromptWithOpenAI(prompts[i].prompt);
-};
-fab.onclick = () => {
-  // Garantit l’ouverture de la modale création prompt avec sens/action courants
-  openModal({
-    sense: HP.senses[uiState.sense].id,
-    action: HP.senses[uiState.sense].actions[uiState.action],
-    title: "",
-    tags: "",
-    prompt: ""
-  }, null);
-};
-function openModal(p = {
-  sense: HP.senses[0].id,
-  action: HP.senses[0].actions[0],
-  title: '',
-  tags: '',
-  prompt: ''
-}, idx = null) {
-  editForm.dataset.idx = idx;
-  senseSel.innerHTML = '';
-  HP.senses.forEach(s=>{
-    const o=document.createElement('option');
-    o.value=s.id; o.textContent=s.label;
-    if(s.id===p.sense) o.selected=true;
-    senseSel.appendChild(o);
-  });
-  actionSel.innerHTML='';
-  const actList = HP.senses.find(s=>s.id===p.sense).actions;
-  actList.forEach(a=>{
-    const o=document.createElement('option');
-    o.value=a; o.textContent=a;
-    if(a===p.action) o.selected=true;
-    actionSel.appendChild(o);
-  });
-  titleInp.value = p.title || "";
-  tagsInp.value = p.tags || "";
-  promptInp.value = p.prompt || "";
-  openOverlay(modalOv);
-  setTimeout(() => { titleInp.focus(); }, 80);
-}
-senseSel.onchange=()=>{
-  actionSel.innerHTML='';
-  const acts = HP.senses.find(s=>s.id===senseSel.value).actions;
-  acts.forEach(a=>{
-    const o=document.createElement('option');o.value=a;o.textContent=a;actionSel.appendChild(o);
-  });
-};
-editForm.onsubmit=e=>{
- e.preventDefault();
- const idx=editForm.dataset.idx;
- const obj={sense:senseSel.value,action:actionSel.value,
-  title:titleInp.value.trim(),tags:tagsInp.value.trim(),prompt:promptInp.value.trim()};
- if(idx==='null'||idx===null)prompts.unshift(obj); else prompts[idx]=obj;
- Store.set(prompts);toast('Enregistré');closeOverlay(modalOv);render();
-};
-function openOverlay(ov){ov.style.display='flex';ov.open=true;
- ov.querySelector('[data-close]')?.focus();}
-function closeOverlay(ov){ov.style.display='none';ov.open=false;}
-document.body.addEventListener('click',e=>{
- if(e.target.matches('[data-close]'))closeOverlay(e.target.closest('.overlay'));
-  // MODIFICATION ICI: Ne ferme l'overlay que si ce n'est PAS l'overlay de la modale d'édition de prompt (modalOv).
- if(e.target.classList.contains('overlay') && e.target.id !== 'modalOv')closeOverlay(e.target);
-});
-document.addEventListener('keydown',e=>{
- if(e.key==='Escape'){[modalOv,sandboxOv,apiKeyOv].forEach(o=>o.open&&closeOverlay(o));}
-});
-actionSelectFill(); selectSense(uiState.sense); render();
-/* API KEY MODAL */
-apiKeyBtn.onclick=()=>{apiKeyStatus.textContent='';apiKeyInp.value=Store.getAPI()||'';openOverlay(apiKeyOv);apiKeyInp.focus();};
-apiKeyModal.onsubmit=async e=>{
- e.preventDefault();
- const k=apiKeyInp.value.trim();
- if(!/^sk-[A-Za-z0-9]{20,}/.test(k)){apiKeyStatus.textContent="Clé invalide";apiKeyStatus.className="api-key-status api-key-bad";return;}
- apiKeyStatus.textContent='Test clé…';apiKeyStatus.className="api-key-status";
- try{
-   await testApiKeyOpenAI(k);
-   Store.setAPI(k);apiKeyStatus.textContent="Clé validée !";apiKeyStatus.className="api-key-status api-key-ok";
-   setTimeout(()=>{closeOverlay(apiKeyOv);toast("Clé OpenAI sauvegardée")},800);
- }catch{
-   apiKeyStatus.textContent="Clé refusée par OpenAI";apiKeyStatus.className="api-key-status api-key-bad";
- }
-};
-window.testPromptWithOpenAI=async function(prompt){
- const key=Store.getAPI();
- if(!key){closeOverlay(sandboxOv);openOverlay(apiKeyOv);apiKeyInp.focus();toast("Configure ta clé OpenAI");return;}
- sandboxLoader.style.display='block';
- try{
-  const body={model:"gpt-4o",messages:[{role:"user",content:prompt}],max_tokens:400,temperature:0.7};
-  const res=await fetch("https://api.openai.com/v1/chat/completions",{
-   method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
-   body:JSON.stringify(body)
-  });
-  if(!res.ok) throw new Error("API refuse");
-  const data=await res.json();
-  let rep=(data.choices?.[0]?.message?.content)||"(Réponse vide)";
-  sandboxOut.textContent=rep.trim();
- }catch(e){
-  sandboxOut.textContent="❌ Erreur OpenAI : "+e;
- }finally{sandboxLoader.style.display='none';}
-};
-window.testApiKeyOpenAI=async function(k){
- const body={model:"gpt-3.5-turbo",messages:[{role:"user",content:"Hello!"}],max_tokens:2,temperature:0.1};
- const res=await fetch("https://api.openai.com/v1/chat/completions",{
-  method:"POST",headers:{"Authorization":"Bearer "+k,"Content-Type":"application/json"},
-  body:JSON.stringify(body)
- });
- if(!res.ok) throw new Error("Clé refusée");
- await res.json();
-};
-// ===== Exporter la base au format JSON =====
-const exportBtn = document.getElementById('exportBtn');
-exportBtn.addEventListener('click', () => {
-  const data = JSON.stringify(prompts, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'promptflow_prompts.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('Export terminé ! 🎉');
-});
+<body class="bg-slate-100 text-slate-800">
 
-// ===== Importer depuis un fichier JSON =====
-const importBtn   = document.getElementById('importBtn');
-const importInput = document.getElementById('importInput');
+    <div id="app" v-cloak class="container mx-auto p-4 max-w-2xl">
 
-importBtn.addEventListener('click', () => importInput.click());
+        <div id="toast" class="toast">Message</div>
 
-importInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const imported = JSON.parse(reader.result);
-      if (!Array.isArray(imported)) throw new Error('Format invalide');
-      prompts = imported;             // on remplace tout
-      Store.set(prompts);             // on sauvegarde
-      render();                       // on rafraîchit l’affichage
-      toast('Import réussi ! 🚀');
-    } catch (err) {
-      console.error(err);
-      toast('Erreur d’import : fichier invalide ❌');
-    }
-  };
-  reader.readAsText(file);
-});
-</script>
+        <div id="confirmationModalBackdrop" class="modal-backdrop"></div>
+        <div id="confirmationModal" class="modal">
+            <h3 class="text-lg font-semibold mb-4" id="modalTitle">Confirmation</h3>
+            <p id="modalMessage" class="mb-6">Êtes-vous sûr ?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="modalCancelButton" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Annuler</button>
+                <button id="modalConfirmButton" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Confirmer</button>
+            </div>
+        </div>
+
+        <section id="listView" class="space-y-6">
+            <header class="flex flex-col sm:flex-row justify-between items-center gap-4 py-4">
+                <h1 class="text-3xl font-bold text-indigo-600">Mes Prompts Précieux</h1>
+                <button id="addPromptButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Nouveau Prompt
+                </button>
+            </header>
+
+            <div class="p-4 bg-white rounded-lg shadow space-y-4">
+                <input type="search" id="searchInput" placeholder="Rechercher par titre, corps, tags..." class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <select id="categoryFilter" class="flex-grow p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Toutes les catégories</option>
+                        </select>
+                    <button id="filterFavoritesButton" class="w-full sm:w-auto px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-md flex items-center justify-center">
+                        <i class="fas fa-star mr-2"></i> Favoris
+                    </button>
+                     <button id="clearFiltersButton" class="w-full sm:w-auto px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md flex items-center justify-center">
+                        <i class="fas fa-times mr-2"></i> Effacer Filtres
+                    </button>
+                </div>
+            </div>
+
+            <div id="promptList" class="space-y-4">
+                <p id="noPromptsMessage" class="text-center text-gray-500 py-8 text-lg">Aucun prompt pour le moment. Cliquez sur "Nouveau Prompt" pour commencer !</p>
+            </div>
+             <p class="text-xs text-center text-gray-500 mt-8">
+                Vos données sont stockées localement dans votre navigateur. Vider le cache peut entraîner leur perte.
+            </p>
+        </section>
+
+        <section id="formView" class="hidden p-6 bg-white rounded-lg shadow-xl space-y-6">
+            <header class="flex justify-between items-center">
+                <h2 id="formTitle" class="text-2xl font-semibold text-indigo-700">Ajouter un nouveau Prompt</h2>
+                <button id="backToListButton" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
+                </button>
+            </header>
+            <form id="promptForm" class="space-y-4">
+                <input type="hidden" id="promptId">
+                <div>
+                    <label for="promptTitle" class="block text-sm font-medium text-gray-700">Titre du Prompt <span class="text-red-500">*</span></label>
+                    <input type="text" id="promptTitle" required class="mt-1">
+                </div>
+                <div>
+                    <label for="promptBody" class="block text-sm font-medium text-gray-700">Corps du Prompt <span class="text-red-500">*</span></label>
+                    <textarea id="promptBody" rows="6" required class="mt-1"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="promptCategory" class="block text-sm font-medium text-gray-700">Catégorie</label>
+                        <div class="flex gap-2">
+                            <select id="promptCategory" class="mt-1 flex-grow">
+                                </select>
+                            <button type="button" id="addNewCategoryButton" class="mt-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-sm rounded-md">Nouvelle</button>
+                        </div>
+                        <input type="text" id="newCategoryInput" placeholder="Nom nouvelle catégorie" class="mt-2 hidden w-full">
+                    </div>
+                    <div>
+                        <label for="promptModel" class="block text-sm font-medium text-gray-700">Modèle LLM Cible</label>
+                        <input type="text" id="promptModel" class="mt-1">
+                    </div>
+                </div>
+                <div>
+                    <label for="promptTags" class="block text-sm font-medium text-gray-700">Tags (séparés par entrée)</label>
+                    <div id="tagInputContainer" class="tag-input-container mt-1">
+                        <input type="text" id="promptTagsInput" class="tag-input" placeholder="Ajouter un tag et appuyer sur Entrée">
+                    </div>
+                </div>
+                <div>
+                    <label for="promptExpectedResponse" class="block text-sm font-medium text-gray-700">Exemple de Réponse Attendue</label>
+                    <textarea id="promptExpectedResponse" rows="3" class="mt-1"></textarea>
+                </div>
+                <div>
+                    <label for="promptNotes" class="block text-sm font-medium text-gray-700">Notes/Instructions</label>
+                    <textarea id="promptNotes" rows="3" class="mt-1"></textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="promptFavorite" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                    <label for="promptFavorite" class="ml-2 block text-sm text-gray-900">Marquer comme Favori</label>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelFormButton" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Sauvegarder</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="detailView" class="hidden p-6 bg-white rounded-lg shadow-xl space-y-6">
+            <header class="flex justify-between items-center">
+                <h2 id="detailTitle" class="text-2xl font-semibold text-indigo-700 break-all"></h2>
+                <button id="backToListFromDetailButton" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
+                </button>
+            </header>
+            <div class="space-y-3">
+                <p><strong>Catégorie:</strong> <span id="detailCategory" class="text-gray-700"></span></p>
+                <p><strong>Modèle LLM:</strong> <span id="detailModel" class="text-gray-700"></span></p>
+                <div>
+                    <strong>Tags:</strong>
+                    <div id="detailTags" class="flex flex-wrap gap-2 mt-1">
+                        </div>
+                </div>
+                <p><strong>Date de création:</strong> <span id="detailCreatedDate" class="text-gray-700"></span></p>
+                <p><strong>Dernière modification:</strong> <span id="detailModifiedDate" class="text-gray-700"></span></p>
+                <p><strong>Favori:</strong> <span id="detailFavorite" class="text-gray-700"></span></p>
+
+                <div class="pt-3">
+                    <h3 class="font-semibold text-gray-800">Corps du Prompt:</h3>
+                    <div id="detailBody" class="mt-1 p-3 bg-gray-50 rounded-md whitespace-pre-wrap break-words max-h-60 overflow-y-auto"></div>
+                    <button id="copyPromptButton" class="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center">
+                        <i class="fas fa-copy mr-2"></i> Copier le Prompt
+                    </button>
+                </div>
+
+                <div id="detailExpectedResponseContainer" class="pt-3">
+                    <h3 class="font-semibold text-gray-800">Exemple de Réponse Attendue:</h3>
+                    <div id="detailExpectedResponse" class="mt-1 p-3 bg-gray-50 rounded-md whitespace-pre-wrap break-words max-h-60 overflow-y-auto"></div>
+                </div>
+
+                <div id="detailNotesContainer" class="pt-3">
+                    <h3 class="font-semibold text-gray-800">Notes/Instructions:</h3>
+                    <div id="detailNotes" class="mt-1 p-3 bg-gray-50 rounded-md whitespace-pre-wrap break-words max-h-60 overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-4">
+                <button id="editPromptButton" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">Modifier</button>
+                <button id="deletePromptButton" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Supprimer</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    // Application Namespace
+    const PromptApp = {
+        // State
+        prompts: [],
+        categories: ["Écriture", "Code", "Marketing", "Traduction", "Personnel", "Recherche", "Brainstorming"],
+        currentView: 'listView', // listView, formView, detailView
+        editingPromptId: null,
+        filterFavoriteActive: false,
+
+        // DOM Elements
+        elements: {
+            app: document.getElementById('app'),
+            listView: document.getElementById('listView'),
+            formView: document.getElementById('formView'),
+            detailView: document.getElementById('detailView'),
+            addPromptButton: document.getElementById('addPromptButton'),
+            promptList: document.getElementById('promptList'),
+            noPromptsMessage: document.getElementById('noPromptsMessage'),
+            promptForm: document.getElementById('promptForm'),
+            formTitle: document.getElementById('formTitle'),
+            promptId: document.getElementById('promptId'),
+            promptTitle: document.getElementById('promptTitle'),
+            promptBody: document.getElementById('promptBody'),
+            promptCategory: document.getElementById('promptCategory'),
+            addNewCategoryButton: document.getElementById('addNewCategoryButton'),
+            newCategoryInput: document.getElementById('newCategoryInput'),
+            promptModel: document.getElementById('promptModel'),
+            tagInputContainer: document.getElementById('tagInputContainer'),
+            promptTagsInput: document.getElementById('promptTagsInput'),
+            promptExpectedResponse: document.getElementById('promptExpectedResponse'),
+            promptNotes: document.getElementById('promptNotes'),
+            promptFavorite: document.getElementById('promptFavorite'),
+            cancelFormButton: document.getElementById('cancelFormButton'),
+            backToListButton: document.getElementById('backToListButton'),
+            backToListFromDetailButton: document.getElementById('backToListFromDetailButton'),
+            detailTitle: document.getElementById('detailTitle'),
+            detailCategory: document.getElementById('detailCategory'),
+            detailModel: document.getElementById('detailModel'),
+            detailTags: document.getElementById('detailTags'),
+            detailCreatedDate: document.getElementById('detailCreatedDate'),
+            detailModifiedDate: document.getElementById('detailModifiedDate'),
+            detailFavorite: document.getElementById('detailFavorite'),
+            detailBody: document.getElementById('detailBody'),
+            detailExpectedResponseContainer: document.getElementById('detailExpectedResponseContainer'),
+            detailExpectedResponse: document.getElementById('detailExpectedResponse'),
+            detailNotesContainer: document.getElementById('detailNotesContainer'),
+            detailNotes: document.getElementById('detailNotes'),
+            copyPromptButton: document.getElementById('copyPromptButton'),
+            editPromptButton: document.getElementById('editPromptButton'),
+            deletePromptButton: document.getElementById('deletePromptButton'),
+            searchInput: document.getElementById('searchInput'),
+            categoryFilter: document.getElementById('categoryFilter'),
+            filterFavoritesButton: document.getElementById('filterFavoritesButton'),
+            clearFiltersButton: document.getElementById('clearFiltersButton'),
+            toast: document.getElementById('toast'),
+            confirmationModalBackdrop: document.getElementById('confirmationModalBackdrop'),
+            confirmationModal: document.getElementById('confirmationModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalMessage: document.getElementById('modalMessage'),
+            modalCancelButton: document.getElementById('modalCancelButton'),
+            modalConfirmButton: document.getElementById('modalConfirmButton'),
+        },
+
+        // Initialization
+        init() {
+            // Load data from localStorage
+            this.loadPrompts();
+            this.loadCategories();
+
+            // Setup event listeners
+            this.elements.addPromptButton.addEventListener('click', () => this.showView('formView'));
+            this.elements.promptForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+            this.elements.cancelFormButton.addEventListener('click', () => this.showView('listView'));
+            this.elements.backToListButton.addEventListener('click', () => this.showView('listView'));
+            this.elements.backToListFromDetailButton.addEventListener('click', () => this.showView('listView'));
+            
+            this.elements.searchInput.addEventListener('input', () => this.renderPromptList());
+            this.elements.categoryFilter.addEventListener('change', () => this.renderPromptList());
+            this.elements.filterFavoritesButton.addEventListener('click', () => this.toggleFavoriteFilter());
+            this.elements.clearFiltersButton.addEventListener('click', () => this.clearFilters());
+
+            this.elements.addNewCategoryButton.addEventListener('click', () => this.toggleNewCategoryInput());
+            this.elements.newCategoryInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addNewCategory();
+                }
+            });
+
+            this.elements.promptTagsInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addTagToForm(this.elements.promptTagsInput.value.trim());
+                    this.elements.promptTagsInput.value = '';
+                }
+            });
+            
+            this.elements.modalCancelButton.addEventListener('click', () => this.hideConfirmationModal());
+
+            // Initial render
+            this.populateCategoryFilter();
+            this.populateFormCategories();
+            this.renderPromptList();
+            this.showView('listView'); // Start with the list view
+            this.elements.app.removeAttribute('v-cloak');
+        },
+
+        // View Management
+        showView(viewName) {
+            this.currentView = viewName;
+            this.elements.listView.classList.toggle('hidden', viewName !== 'listView');
+            this.elements.formView.classList.toggle('hidden', viewName !== 'formView');
+            this.elements.detailView.classList.toggle('hidden', viewName !== 'detailView');
+
+            if (viewName === 'formView' && !this.editingPromptId) {
+                this.resetForm();
+                this.elements.formTitle.textContent = 'Ajouter un nouveau Prompt';
+            }
+            if (viewName === 'listView') {
+                this.editingPromptId = null;
+                this.renderPromptList(); // Refresh list when returning
+            }
+        },
+
+        // Data Persistence (localStorage)
+        savePrompts() {
+            localStorage.setItem('prompts', JSON.stringify(this.prompts));
+        },
+        loadPrompts() {
+            const storedPrompts = localStorage.getItem('prompts');
+            if (storedPrompts) {
+                this.prompts = JSON.parse(storedPrompts);
+            }
+        },
+        saveCategories() {
+            localStorage.setItem('promptCategories', JSON.stringify(this.categories));
+        },
+        loadCategories() {
+            const storedCategories = localStorage.getItem('promptCategories');
+            if (storedCategories) {
+                this.categories = JSON.parse(storedCategories);
+            }
+             // Ensure default categories are present if none loaded or empty
+            if (!this.categories || this.categories.length === 0) {
+                this.categories = ["Écriture", "Code", "Marketing", "Traduction", "Personnel", "Recherche", "Brainstorming"];
+            }
+        },
+
+        // Form Handling
+        handleFormSubmit(event) {
+            event.preventDefault();
+            const title = this.elements.promptTitle.value.trim();
+            const body = this.elements.promptBody.value.trim();
+
+            if (!title || !body) {
+                this.showToast('Le titre et le corps du prompt sont obligatoires.', 'error');
+                return;
+            }
+            
+            const formData = {
+                id: this.editingPromptId || `prompt_${new Date().getTime()}`,
+                title: title,
+                body: body,
+                category: this.elements.promptCategory.value,
+                model: this.elements.promptModel.value.trim(),
+                tags: this.getTagsFromForm(),
+                expectedResponse: this.elements.promptExpectedResponse.value.trim(),
+                notes: this.elements.promptNotes.value.trim(),
+                favorite: this.elements.promptFavorite.checked,
+                createdDate: this.editingPromptId ? this.prompts.find(p => p.id === this.editingPromptId).createdDate : new Date().toISOString(),
+                modifiedDate: new Date().toISOString()
+            };
+
+            if (this.editingPromptId) {
+                // Update existing prompt
+                const index = this.prompts.findIndex(p => p.id === this.editingPromptId);
+                this.prompts[index] = formData;
+                this.showToast('Prompt mis à jour avec succès !', 'success');
+            } else {
+                // Add new prompt
+                this.prompts.unshift(formData); // Add to the beginning of the array
+                this.showToast('Prompt sauvegardé avec succès !', 'success');
+            }
+
+            this.savePrompts();
+            this.renderPromptList();
+            this.showView('listView');
+            this.resetForm();
+        },
+        resetForm() {
+            this.elements.promptForm.reset();
+            this.elements.promptId.value = '';
+            this.editingPromptId = null;
+            this.elements.formTitle.textContent = 'Ajouter un nouveau Prompt';
+            this.elements.newCategoryInput.classList.add('hidden');
+            this.elements.newCategoryInput.value = '';
+            this.clearTagsFromForm();
+            this.populateFormCategories(); // Repopulate to ensure category list is fresh
+        },
+        
+        // Tag Management in Form
+        addTagToForm(tagText) {
+            if (tagText && !this.getTagsFromForm().includes(tagText)) {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag cursor-pointer';
+                tagElement.textContent = tagText;
+                tagElement.onclick = () => tagElement.remove(); // Click to remove
+                this.elements.tagInputContainer.insertBefore(tagElement, this.elements.promptTagsInput);
+            }
+        },
+        getTagsFromForm() {
+            const tags = [];
+            this.elements.tagInputContainer.querySelectorAll('.tag').forEach(tagEl => {
+                tags.push(tagEl.textContent);
+            });
+            return tags;
+        },
+        clearTagsFromForm() {
+            this.elements.tagInputContainer.querySelectorAll('.tag').forEach(tagEl => tagEl.remove());
+        },
+        loadTagsToForm(tagsArray) {
+            this.clearTagsFromForm();
+            tagsArray.forEach(tag => this.addTagToForm(tag));
+        },
+
+        // Category Management
+        populateCategoryFilter() {
+            this.elements.categoryFilter.innerHTML = '<option value="">Toutes les catégories</option>'; // Reset
+            this.categories.sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                this.elements.categoryFilter.appendChild(option);
+            });
+        },
+        populateFormCategories() {
+            this.elements.promptCategory.innerHTML = ''; // Reset
+            this.categories.sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                this.elements.promptCategory.appendChild(option);
+            });
+        },
+        toggleNewCategoryInput() {
+            this.elements.newCategoryInput.classList.toggle('hidden');
+            if (!this.elements.newCategoryInput.classList.contains('hidden')) {
+                this.elements.newCategoryInput.focus();
+            }
+        },
+        addNewCategory() {
+            const newCategoryName = this.elements.newCategoryInput.value.trim();
+            if (newCategoryName && !this.categories.includes(newCategoryName)) {
+                this.categories.push(newCategoryName);
+                this.categories.sort();
+                this.saveCategories();
+                this.populateCategoryFilter();
+                this.populateFormCategories();
+                this.elements.promptCategory.value = newCategoryName; // Select the new category
+                this.elements.newCategoryInput.value = '';
+                this.elements.newCategoryInput.classList.add('hidden');
+                this.showToast(`Catégorie "${newCategoryName}" ajoutée.`, 'success');
+            } else if (this.categories.includes(newCategoryName)) {
+                 this.showToast(`La catégorie "${newCategoryName}" existe déjà.`, 'error');
+                 this.elements.promptCategory.value = newCategoryName;
+                 this.elements.newCategoryInput.value = '';
+                 this.elements.newCategoryInput.classList.add('hidden');
+            } else {
+                 this.elements.newCategoryInput.classList.add('hidden');
+            }
+        },
+
+        // Prompt List Rendering
+        renderPromptList() {
+            this.elements.promptList.innerHTML = ''; // Clear existing list
+            const searchTerm = this.elements.searchInput.value.toLowerCase();
+            const selectedCategory = this.elements.categoryFilter.value;
+
+            let filteredPrompts = this.prompts.filter(prompt => {
+                const matchesSearch = (
+                    prompt.title.toLowerCase().includes(searchTerm) ||
+                    prompt.body.toLowerCase().includes(searchTerm) ||
+                    prompt.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+                const matchesCategory = !selectedCategory || prompt.category === selectedCategory;
+                const matchesFavorite = !this.filterFavoriteActive || prompt.favorite;
+                return matchesSearch && matchesCategory && matchesFavorite;
+            });
+            
+            // Sort by modification date, newest first
+            filteredPrompts.sort((a, b) => new Date(b.modifiedDate) - new Date(a.modifiedDate));
+
+
+            if (filteredPrompts.length === 0) {
+                this.elements.noPromptsMessage.classList.remove('hidden');
+            } else {
+                this.elements.noPromptsMessage.classList.add('hidden');
+                filteredPrompts.forEach(prompt => {
+                    const promptCard = this.createPromptCard(prompt);
+                    this.elements.promptList.appendChild(promptCard);
+                });
+            }
+        },
+        createPromptCard(prompt) {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer';
+            card.addEventListener('click', () => this.showPromptDetail(prompt.id));
+
+            let bodyPreview = prompt.body.substring(0, 100);
+            if (prompt.body.length > 100) bodyPreview += "...";
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2">${this.escapeHTML(prompt.title)}</h3>
+                    ${prompt.favorite ? '<i class="fas fa-star text-yellow-400 text-lg"></i>' : '<i class="far fa-star text-gray-400 text-lg"></i>'}
+                </div>
+                <p class="text-sm text-gray-600 mb-1"><strong>Catégorie:</strong> ${this.escapeHTML(prompt.category) || 'N/A'}</p>
+                <p class="text-sm text-gray-500 mb-3">${this.escapeHTML(bodyPreview)}</p>
+                <div class="flex flex-wrap gap-1 mb-2">
+                    ${prompt.tags.map(tag => `<span class="tag text-xs">${this.escapeHTML(tag)}</span>`).join('')}
+                </div>
+                <p class="text-xs text-gray-400 text-right">Modifié: ${new Date(prompt.modifiedDate).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' })}</p>
+            `;
+            return card;
+        },
+        
+        // Favorite Filter
+        toggleFavoriteFilter() {
+            this.filterFavoriteActive = !this.filterFavoriteActive;
+            if (this.filterFavoriteActive) {
+                this.elements.filterFavoritesButton.classList.remove('bg-yellow-400', 'hover:bg-yellow-500');
+                this.elements.filterFavoritesButton.classList.add('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+            } else {
+                this.elements.filterFavoritesButton.classList.add('bg-yellow-400', 'hover:bg-yellow-500');
+                this.elements.filterFavoritesButton.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+            }
+            this.renderPromptList();
+        },
+
+        clearFilters() {
+            this.elements.searchInput.value = '';
+            this.elements.categoryFilter.value = '';
+            this.filterFavoriteActive = false;
+            this.elements.filterFavoritesButton.classList.add('bg-yellow-400', 'hover:bg-yellow-500');
+            this.elements.filterFavoritesButton.classList.remove('bg-yellow-500', 'ring-2', 'ring-yellow-300');
+            this.renderPromptList();
+            this.showToast('Filtres effacés.', 'success');
+        },
+
+        // Prompt Detail View
+        showPromptDetail(promptId) {
+            const prompt = this.prompts.find(p => p.id === promptId);
+            if (!prompt) return;
+
+            this.elements.detailTitle.textContent = prompt.title;
+            this.elements.detailCategory.textContent = prompt.category || 'N/A';
+            this.elements.detailModel.textContent = prompt.model || 'N/A';
+            
+            this.elements.detailTags.innerHTML = prompt.tags.map(tag => `<span class="tag">${this.escapeHTML(tag)}</span>`).join('');
+            if (prompt.tags.length === 0) this.elements.detailTags.innerHTML = '<span class="text-gray-500 text-sm">Aucun tag</span>';
+
+
+            this.elements.detailCreatedDate.textContent = new Date(prompt.createdDate).toLocaleString('fr-FR');
+            this.elements.detailModifiedDate.textContent = new Date(prompt.modifiedDate).toLocaleString('fr-FR');
+            this.elements.detailFavorite.innerHTML = prompt.favorite ? '<i class="fas fa-star text-yellow-400"></i> Oui' : '<i class="far fa-star text-gray-400"></i> Non';
+            
+            this.elements.detailBody.textContent = prompt.body;
+            
+            if (prompt.expectedResponse) {
+                this.elements.detailExpectedResponse.textContent = prompt.expectedResponse;
+                this.elements.detailExpectedResponseContainer.classList.remove('hidden');
+            } else {
+                this.elements.detailExpectedResponseContainer.classList.add('hidden');
+            }
+
+            if (prompt.notes) {
+                this.elements.detailNotes.textContent = prompt.notes;
+                this.elements.detailNotesContainer.classList.remove('hidden');
+            } else {
+                this.elements.detailNotesContainer.classList.add('hidden');
+            }
+
+            this.elements.copyPromptButton.onclick = () => this.copyToClipboard(prompt.body, 'Prompt copié dans le presse-papiers !');
+            this.elements.editPromptButton.onclick = () => this.editPrompt(promptId);
+            this.elements.deletePromptButton.onclick = () => this.confirmDeletePrompt(promptId);
+
+            this.showView('detailView');
+        },
+
+        // Edit Prompt
+        editPrompt(promptId) {
+            const prompt = this.prompts.find(p => p.id === promptId);
+            if (!prompt) return;
+
+            this.editingPromptId = promptId;
+            this.elements.formTitle.textContent = 'Modifier le Prompt';
+            this.elements.promptId.value = prompt.id;
+            this.elements.promptTitle.value = prompt.title;
+            this.elements.promptBody.value = prompt.body;
+            this.elements.promptCategory.value = prompt.category;
+            this.elements.promptModel.value = prompt.model;
+            this.loadTagsToForm(prompt.tags);
+            this.elements.promptExpectedResponse.value = prompt.expectedResponse;
+            this.elements.promptNotes.value = prompt.notes;
+            this.elements.promptFavorite.checked = prompt.favorite;
+            
+            this.showView('formView');
+        },
+
+        // Delete Prompt
+        confirmDeletePrompt(promptId) {
+            const prompt = this.prompts.find(p => p.id === promptId);
+            if (!prompt) return;
+
+            this.showConfirmationModal(
+                `Supprimer "${prompt.title}" ?`,
+                "Êtes-vous sûr de vouloir supprimer ce prompt ? Cette action est irréversible.",
+                () => this.deletePrompt(promptId)
+            );
+        },
+        deletePrompt(promptId) {
+            this.prompts = this.prompts.filter(p => p.id !== promptId);
+            this.savePrompts();
+            this.renderPromptList();
+            this.showView('listView');
+            this.hideConfirmationModal();
+            this.showToast('Prompt supprimé avec succès.', 'success');
+        },
+
+        // Utility Functions
+        copyToClipboard(text, message) {
+            // Utilisation de document.execCommand pour une meilleure compatibilité dans les iframes
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                this.showToast(message || 'Copié dans le presse-papiers !', 'success');
+            } catch (err) {
+                this.showToast('Erreur lors de la copie.', 'error');
+                console.error('Erreur de copie: ', err);
+            }
+            document.body.removeChild(textArea);
+        },
+        showToast(message, type = 'success') { // type can be 'success' or 'error'
+            const toast = this.elements.toast;
+            toast.textContent = message;
+            toast.className = 'toast show ' + type; // Reset classes and add new type
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        },
+        showConfirmationModal(title, message, onConfirm) {
+            this.elements.modalTitle.textContent = title;
+            this.elements.modalMessage.textContent = message;
+            this.elements.confirmationModalBackdrop.style.display = 'block';
+            this.elements.confirmationModal.style.display = 'block';
+            
+            // Clone and replace to remove previous event listeners
+            const oldConfirmButton = this.elements.modalConfirmButton;
+            const newConfirmButton = oldConfirmButton.cloneNode(true);
+            oldConfirmButton.parentNode.replaceChild(newConfirmButton, oldConfirmButton);
+            this.elements.modalConfirmButton = newConfirmButton; // Update reference
+
+            this.elements.modalConfirmButton.onclick = onConfirm; // Assign new listener
+        },
+
+        hideConfirmationModal() {
+            this.elements.confirmationModalBackdrop.style.display = 'none';
+            this.elements.confirmationModal.style.display = 'none';
+        },
+        escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return str.replace(/[&<>"']/g, function (match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
+            });
+        }
+    };
+
+    // Initialize the app when the DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        PromptApp.init();
+    });
+
+    </script>
 </body>
 </html>
